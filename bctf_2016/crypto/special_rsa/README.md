@@ -11,7 +11,7 @@ Can you recover flag.txt from flag.enc?
 
 ---------------------------------------
 
-### setp 1
+### step 1
 Analyzing the `special_rsa.py` src code, we know the key is `k` or `k_inv`. If we know the one of them, problem is solved.
 ```python
 def decrypt(c, k):
@@ -42,7 +42,7 @@ t = (m * c_inv) % N
 print (t*c)%N == m  # print true
 ```
 
-### setp 2
+### step 2
 from the `msg.enc`, we can know there are two `r`, and we have: 
 ```python
 k_inv^r1 = t1 (mod N)  # t1 = (m * c1_inv) % N

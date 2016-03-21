@@ -51,7 +51,7 @@ inf1 = getEncInf(open(msg).read())
 inf2 = getDecInf(open(enc).read())
 inf3 = getDecInf(open(flag).read())
 
-### setp 1
+### step 1
 # now pow(k_inv, r, N) * c = m (mod N)
 # if set pow(k_inv, r, N) is n, so n*c = m (mod N)
 #   n*c*c_inv = m*c_inv (mod N)
@@ -72,7 +72,7 @@ for i in range(2):
     t = (m * c_inv) % N
     lst.append([t, r])
 
-### setp 2
+### step 2
 # now we have : 
 #   k_inv^r1 = t1 (mod N) 
 #   k_inv^r2 = t2 (mod N)
@@ -87,7 +87,7 @@ for i in range(2):
 #   k_inv^r0 * k_inv^r2 * n = t1 * tmp (mod N)
 #   k_inv^r0 = t1 * tmp (mod N)
 
-### setp 3
+### step 3
 # we can see gcd(r1, r2) is 1, check as below：
 #   import gmpy
 #   print gmpy.gcd(inf2[0][0], inf2[1][0]) == 1
