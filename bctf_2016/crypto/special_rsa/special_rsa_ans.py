@@ -1,9 +1,12 @@
+# -*- coding:utf-8 -*-
+'''
+Created on Mar 21, 2016
 
-import os, sys
-# from key import k, random_r
+@author: czl
+'''
+
+import sys
 import msgpack
-import string
-import gmpy
 
 sys.setrecursionlimit(1000000)
 
@@ -19,65 +22,52 @@ def egcd(a, b):
 def modinv(a, m):
     g, x, y = egcd(a, m)
     assert g == 1
-    # if g != 1: return None
-    # return x+m #x % m
     return x%m
 
 def pad_even(x):
     return ('', '0')[len(x)%2] + x
 
-def encrypt(ms, k):
+def getEncInf(ms):
     out = [] 
     for i in range(0, len(ms), 256):
         m = ms[i:i+256]
         m = int(m.encode('hex'), 16)
         out.append(m)
-        # r = random_r()  # public key
-        # r_s = pad_even(format(r, 'x')).decode('hex')
-        # assert m < N
-        # c = (pow(k, r, N) * m) % N
-        # c_s = pad_even(format(c, 'x')).decode('hex')
-        # out.append((r_s, c_s))
-    # return msgpack.packb(out)
     return out
 
-def decrypt(c, k):
-    out = ''
-    res = []
+def getDecInf(c):
+    out = []
     for r_s, c_s in msgpack.unpackb(c):
         r = int(r_s.encode('hex'), 16)
         c = int(c_s.encode('hex'), 16)
-        res.append([r, c])
-        # k_inv = modinv(k, N)
-        # out += pad_even(format(pow(k_inv, r, N) * c % N, 'x')).decode('hex')
-    # return out
-    return res
+        out.append([r, c])
+    return out
 
 msg = "msg.txt"
 enc = "msg.enc"
 flag = "flag.enc"
 
-res1 = encrypt(open(msg).read(), 1)
-res2 = decrypt(open(enc).read(), 1)
-res3 = decrypt(open(flag).read(), 1)
+inf1 = getEncInf(open(msg).read())
+inf2 = getDecInf(open(enc).read())
+inf3 = getDecInf(open(flag).read())
 
 ### setp 1
 # now pow(k_inv, r, N) * c = m (mod N)
 # if set pow(k_inv, r, N) is n, so n*c = m (mod N)
-# n*c*c_inv = m*c_inv (mod N)
-# n = t (mod N) , m*c_inv = t (mod N)
+#   n*c*c_inv = m*c_inv (mod N)
+#   n = t (mod N) , m*c_inv = t (mod N)
 # we can do a test like below: 
-# c = res2[0][1]
-# m = res1[0]
-# c_inv = modinv(c, N)  
-# t = (m * c_inv) % N 
-# assert (t*c)%N == m
-# print t
+#   c = inf2[0][1]
+#   m = inf1[0]
+#   c_inv = modinv(c, N)  
+#   t = (m * c_inv) % N 
+#   assert (t*c)%N == m
+#   print t
 
 lst = []
 for i in range(2):
-    m = res1[i]
-    r, c = res2[i]
+    m = inf1[i]
+    r, c = inf2[i]
     c_inv = modinv(c, N) 
     t = (m * c_inv) % N
     lst.append([t, r])
@@ -89,18 +79,19 @@ for i in range(2):
 # do some change: 
 #   k_inv^(r0+r2) = t1 (mod N) if r0+r2 equal r1
 #   k_inv^r0 * k_inv^r2 = t1 (mod N)
-# and we can calc the Multiplicative inverse modulo of k_inv^r2 
-#   n = modinv(t2, N)
+# and we can calc the Multiplicative inverse modulo (乘法逆元) of k_inv^r2 
+#   tmp = modinv(t2, N)
 # as the Multiplicative inverse modulo's character:
-#   n*k_inv^r2 = 1 (mod N)
+#   tmp*k_inv^r2 = 1 (mod N)
 # do some change:
-#   k_inv^r0 * k_inv^r2 * n = t1 * n (mod N)
-#   k_inv^r0 = t1 * n (mod N)
+#   k_inv^r0 * k_inv^r2 * n = t1 * tmp (mod N)
+#   k_inv^r0 = t1 * tmp (mod N)
 
 ### setp 3
 # we can see gcd(r1, r2) is 1, check as below：
-#   print gmpy.gcd(res2[0][0], res2[1][0]) == 1
-# so we can get the k_inv by Euclidean algorithm
+#   import gmpy
+#   print gmpy.gcd(inf2[0][0], inf2[1][0]) == 1
+# so we can get the k_inv quickly by Euclidean algorithm (辗转相除法)
 
 def my_gcd(t1, r1, t2, r2): 
     assert r1 > r2   
@@ -116,6 +107,7 @@ def my_gcd(t1, r1, t2, r2):
         t1 = t 
     # print t1, r1 
     # print t2, r2 
+    assert r1 == 1
     return t1
     
 t1, r1 = lst[0]
@@ -127,5 +119,5 @@ else:
     print "second"
     k_inv = my_gcd(t2, r2, t1, r1)
 
-r, c = res3[0]
+r, c = inf3[0]
 print pad_even(format(pow(k_inv, r, N) * c % N, 'x')).decode('hex')
