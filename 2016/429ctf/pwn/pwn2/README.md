@@ -100,3 +100,12 @@ payload = 'A'*56 + ropchain
 `free`问题解决了，但又遇到新问题，在执行`mov dword ptr [edx], eax`时报错，报写入地址不正确，调试后发现`edx`这时的值为0，这不科学，明明上面给`edx`赋值了。找了好久也没找到原因，最后灵机一动，把给`edx`赋值的语句多copy一次。nice，终于搞定了。全部代码请看[exp.py](./exp.py)
 
 
+### 0x3 后续
+esrever10看了这题后发现之前写入地址不对应该是`and     esp, 0FFFFFFF0h`导致，
+```
+.text:08048E24 55                          push    ebp
+.text:08048E25 89 E5                       mov     ebp, esp
+.text:08048E27 83 E4 F0                    and     esp, 0FFFFFFF0h
+.text:08048E2A 83 EC 50                    sub     esp, 50h
+```
+分析了下，确实是这样的，对齐esp可能导致esp偏移了4/8/12个字节，由于IDA也不知道运行中的esp的值，所以未能显示出这一情况。对于这种情况，最好的解决方案应该是插入三个指向ret指令的地址，相当于继续往下执行，忽略不稳定因素。
