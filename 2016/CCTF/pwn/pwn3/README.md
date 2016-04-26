@@ -6,7 +6,7 @@
 ---------------------------------------
 
 ### 0x1 分析程序
-执行下程序，发现输入用户名，用IDA分析下，简单的凯撒加密，算下就得到用户名了：
+执行下程序，发现要输入用户名，用IDA分析下，是简单的凯撒加密，算下就得到用户名了：
 
 ```
 username = bytearray("sysbdmin")
@@ -74,3 +74,18 @@ int get_file()
 + 本来是直接用`%n`直接一次写4个字节，但测试的时候，发现由于要输出太多字符，程序崩溃了。后来改用`%hhn`，一次只写一个字节，分四次写入。
 + 如果刚好是要写的数字是0，可以换成256，由于溢出了，最后的值还是0。有了这个认识，那么可以做到在一次`printf`里使用多次`%hhn`写多个字节。
 + 其实`system('/bin/sh;abcdefg12334')`也可以达到效果，不用强求用`system('/bin/sh')`
++ 可以用$修饰符直接操作我们感兴趣的参数，例如`8$`将操作format后的第8个参数
+```
+int a = 1, b = 2;
+printf("%2$d, %1$d\n", a, b);
+
+// below is the output:
+// 2, 1
+```
+
+### 0x4 参考资料
++ [格式化字符串漏洞简介](http://drops.wooyun.org/binary/7714)
++ [二进制漏洞之——邪恶的printf](http://drops.wooyun.org/binary/6259)
++ [SEED实验系列：格式化字符串漏洞实验 ](http://www.freebuf.com/articles/network/62473.html)
++ [shellcode之四：格式化串漏洞 ](http://blog.csdn.net/azloong/article/details/6158458)
+
