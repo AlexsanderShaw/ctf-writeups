@@ -12,7 +12,7 @@ Can you hack [this](https://ernst-echidna.ctfcompetition.com/) website? The robo
 
 如图:
 
-[!regitser.png](./register.png)
+![regitser.png](./register.png)
 
 cookie是用户名admin2的md5 hash结果,遂使用document.cookie='md5-hash=21232f297a57a5a743894a0e4a801fc3', 设置新的cookie,访问admin,得到flag
 

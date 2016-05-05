@@ -13,4 +13,4 @@
 
 如图:
 
-[!irc.png](./irc.png)
+![irc.png](./irc.png)
