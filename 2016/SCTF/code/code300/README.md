@@ -54,7 +54,7 @@ for i in range(len(item)):
             print "%d - %d" % (i, j)
 ```            
 
-结果发现都互质，但`N0`和`N9`是一样的。于是google下，发现了[Franklin-Reiter related-message attack](https://en.wikipedia.org/wiki/Coppersmith's_attack#Franklin-Reiter_related-message_attack)，又找了些资料看，最后Sage代码如下：
+结果发现都互质，但`N0`和`N9`是一样的。于是google下，发现了[Franklin-Reiter related-message attack](https://en.wikipedia.org/wiki/Coppersmith's_attack#Franklin-Reiter_related-message_attack)，又找了些资料看，最后Sage代码如下：[PS:可以在线执行](https://sagecell.sagemath.org/)
 
 ``` python
 
